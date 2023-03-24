@@ -1,22 +1,75 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import { useEffect, useRef, useState } from 'react'
 import './App.css'
+import { IData, IDataAuthor } from './hooks/useFetch'
+import Footer from './layout/Footer'
+import Header from './layout/Header'
+import Main from './layout/Main'
+interface Props {
+  author?: string
+}
 
-function App() {
-  const [count, setCount] = useState(0)
+const App: React.FC<Props> = ({ author = '' }) => {
+  let decodedAuthor;
+  let url = 'https://api.quotable.io/random';
+
+  if (author) {
+    decodedAuthor = window.decodeURIComponent(author).toLowerCase();
+    url = `https://quotable.io/quotes?author=${decodedAuthor}`;
+  }
+
+  const [loading, setLoading] = useState(false);
+  const [quote, setQuote] = useState<IDataAuthor | IData | IData[]>();
+
+  console.log(quote);
+
+
+  const shouldFetch = useRef(true);
+
+  const getQuotes = async () => {
+    if (shouldFetch.current) {
+      setLoading(true);
+      shouldFetch.current = false;
+
+      try {
+        const resp = await fetch(url);
+        const data = await resp.json();
+
+        if (author) {
+          setQuote(data);
+        } else {
+          setQuote({
+            author: data.author,
+            content: data.content
+          });
+        }
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+
+    }
+  }
+
+  useEffect(() => {
+    getQuotes()
+  }, [])
+
+  const handleRandom = () => {
+    shouldFetch.current = true;
+    setLoading(true);
+    getQuotes();
+  }
 
   return (
-    <div className="App">
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://reactjs.org" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-    </div>
+    <>
+      <Header handleClick={handleRandom} />
+
+      <Main quote={quote} loading={loading} />
+
+      <Footer />
+
+    </>
   )
 }
 
