@@ -32,24 +32,24 @@ export function useFetch(url: string) {
 }
 
 export interface IData {
-	author: string
-	authorSlug!: string
-	content: string
-	dateAdded?: string
-	dateModified?: string
-	length?: number
-	tags?: string[]
-	_id?: string
+	author: string;
+	authorSlug?: string;
+	content: string;
+	dateAdded?: string;
+	dateModified?: string;
+	length?: number;
+	tags?: string[];
+	_id?: string;
   }
   
   export interface IDataAuthor {
-	count: number
-	content?: string
-	lastItemIndex: null
-	page: number
-	results: IData[]
-	totalCount: number
-	totalPages: number
+	count: number;
+	content?: string;
+	lastItemIndex: null;
+	page: number;
+	results: IData[];
+	totalCount: number;
+	totalPages: number;
   }
 
 export type TApiResponse = IData | IData[] | IDataAuthor | null;
